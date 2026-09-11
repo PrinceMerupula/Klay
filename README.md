@@ -5,7 +5,7 @@ A simple GUI using yt-dlp to help non-technical users download videos and other 
 Very early development
 
 ## Current Milestone
-v0.0.1 - Project setup
+v0.0.2 - First window
 
 ## Planned stack
 - Python
@@ -13,3 +13,6 @@ v0.0.1 - Project setup
 - yt-dlp
 - FFmpeg
 - pytest
+
+## Previous Milestones
+v0.0.1 - Project setup

@@ -12,6 +12,9 @@ dependencies = [
     "PySide6",
 ]
 
+[project.scripts]
+klay = "klay.main:main"
+
 [dependency-groups]
 dev = [
     "pytest",
