@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## v0.0.5 - End-to-end downloading
+
+### Added
+- Connected main interface to downloader module
+- Added basic end-to-end media downloading from Download button
+- URL input passed directly to yt-dlp and downloaded
+
 ## v0.0.4 - yt-dlp Addition
 
 ### Added

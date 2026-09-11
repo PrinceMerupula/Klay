@@ -6,6 +6,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from klay.downloader import download
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -30,4 +31,5 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(container)
 
     def handle_download(self):
-        print(f"Download clicked: {self.url_input.text()}")
+        url = self.url_input.text()
+        download(url)
