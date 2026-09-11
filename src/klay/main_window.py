@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from PySide6.QtWidgets import (
     QComboBox,
     QFileDialog,
@@ -42,6 +44,7 @@ class MainWindow(QMainWindow):
             )
 
         self.output_directory = self.load_output_directory()
+        self.last_downloaded_file = None
 
         self.url_input = QLineEdit()
         self.url_input.setPlaceholderText("Paste or enter a URL")
@@ -418,16 +421,29 @@ class MainWindow(QMainWindow):
 
         return f"{minutes}:{seconds:02}"
 
-    def download_finished(self):
+    def download_finished(self, final_filepath):
         self.download_active = False
         self.download_button.setEnabled(True)
         self.cancel_button.setEnabled(False)
         self.progress_bar.setValue(100)
 
+        self.last_downloaded_file = final_filepath
+
+        if final_filepath:
+            final_path = Path(final_filepath)
+            
+            message = (
+                "The download completed successfully.\n\n"
+                f"{final_path.name}\n\n"
+                f"Saved to:\n{final_path.parent}"
+            )
+        else:
+            message = "The download completed successfully."
+
         QMessageBox.information(
             self,
             "Download Complete",
-            "The download completed successfully.",
+            message,
         )
 
     def download_failed(self):

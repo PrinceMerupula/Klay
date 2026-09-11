@@ -2,6 +2,20 @@
 
 ## Unreleased
 
+## v0.0.18 - Final output tracking
+
+### Added
+- Final output tracking for completed downloads
+- Supports identifying final file after yt-dlp post-processing and FFmpeg conversion
+- Stores most recent completed download path in main GUI window
+
+### Altered
+- Completion popup now displays final filename and destination folder 
+- Download workers return final output path when download completes
+
+### Notes
+- Have not tested extensively with canceled downloads, existing behavior has not been changed
+
 ## v0.0.17 - Persistent preferences and logical defaults
 
 ### Added

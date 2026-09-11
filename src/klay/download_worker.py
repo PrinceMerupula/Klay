@@ -7,7 +7,7 @@ from klay.downloader import DownloadCanceled, download
 
 
 class DownloadWorker(QObject):
-    finished = Signal()
+    finished = Signal(object)
     failed = Signal()
     canceled = Signal()
     progress = Signal(int)
@@ -40,7 +40,7 @@ class DownloadWorker(QObject):
             return
         
         try:
-            download(
+            final_filepath = download(
                 self.url,
                 progress_hook=self.handle_progress,
                 output_directory=self.output_directory,
@@ -53,7 +53,7 @@ class DownloadWorker(QObject):
         except DownloadError:
             self.failed.emit()
         else:
-            self.finished.emit()
+            self.finished.emit(final_filepath)
 
     def handle_progress(self, data):
         if self.cancel_event.is_set():

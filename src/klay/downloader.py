@@ -22,8 +22,26 @@ def download(
     download_mode="Video + Audio",
     max_height=None,
     audio_format="Original",
-) -> None:
+) -> str | None:
     options = {}
+
+    final_filepath = None
+
+    def capture_final_filepath(data):
+        nonlocal final_filepath
+
+        if data.get("status") != "finished":
+            return
+
+        info = data.get("info_dict", {})
+        filepath = info.get("filepath")
+
+        if filepath:
+            final_filepath = filepath
+
+    options["postprocessor_hooks"] = [
+        capture_final_filepath,
+    ]
 
     if progress_hook is not None:
         options["progress_hooks"] = [progress_hook]
@@ -79,6 +97,8 @@ def download(
 
     with yt_dlp.YoutubeDL(options) as ydl:
         ydl.download([url])
+
+    return final_filepath
 
 def get_media_info(url: str) -> dict:
     options = {
