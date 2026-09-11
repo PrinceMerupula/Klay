@@ -5,7 +5,7 @@ A simple GUI using yt-dlp to help non-technical users download videos and other 
 Very early development
 
 ## Current Milestone
-v0.0.8 - Download progress bar
+v0.0.9 - Media metadata preview
 
 ## Planned stack
 - Python

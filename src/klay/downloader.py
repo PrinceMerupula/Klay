@@ -11,7 +11,6 @@ def is_valid_url(url: str) -> bool:
         and bool(parsed_url.netloc)
     )
 
-
 def download(url: str, progress_hook = None) -> None:
     options = {}
 
@@ -20,3 +19,14 @@ def download(url: str, progress_hook = None) -> None:
 
     with yt_dlp.YoutubeDL(options) as ydl:
         ydl.download([url])
+
+def get_media_info(url: str) -> dict:
+    options = {
+        "quiet": True,
+        "skip_download": True,
+    }
+
+    with yt_dlp.YoutubeDL(options) as ydl:
+        info = ydl.extract_info(url, download=False)
+
+    return info

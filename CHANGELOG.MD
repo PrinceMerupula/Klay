@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+## v0.0.9 - Media metadata preview
+
+### Added
+- Media metadata extracted using yt-dlp
+- Analyze button allows for the URL to be inspected before the download
+- Detected media title shown in GUI (additional information to be implemented in a future version)
+- Failed metadata analysis results in a user-facing error popup
+
+### Altered
+- Altered progress bar, rollback updates are visible once again due to bug in previous implementation (will be fixed in a future version)
+
 ## v0.0.8 - Download progress bar
 
 ### Added
