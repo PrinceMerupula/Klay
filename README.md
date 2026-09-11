@@ -5,7 +5,7 @@ A simple GUI using yt-dlp to help non-technical users download videos and other 
 Very early development
 
 ## Current Milestone
-v0.0.5 - End-to-end downloading
+v0.0.6 - Basic URL validation and error handling
 
 ## Planned stack
 - Python

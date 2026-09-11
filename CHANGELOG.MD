@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+## v0.0.6 - Basic URL validation and error handling
+
+### Added
+- Basic HTTP and HTTPS URL validation
+- Validation for empty input
+- Warning dialogs for missing or malformed URLs
+- Error handling for failed yt-dlp downloads
+
 ## v0.0.5 - End-to-end downloading
 
 ### Added
