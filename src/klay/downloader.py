@@ -15,6 +15,7 @@ def download(
     url: str,
     progress_hook=None,
     output_directory=None,
+    download_mode="Best Quality",
 ) -> None:
     options = {}
 
@@ -25,6 +26,15 @@ def download(
         options["paths"] = {
             "home": output_directory,
         }
+
+    if download_mode == "Best Quality":
+        options["format"] = "bestvideo+bestaudio/best"
+
+    elif download_mode == "Video Only":
+        options["format"] = "bestvideo[ext=webm]/bestvideo"
+
+    elif download_mode == "Audio Only":
+        options["format"] = "bestaudio"
 
     with yt_dlp.YoutubeDL(options) as ydl:
         ydl.download([url])

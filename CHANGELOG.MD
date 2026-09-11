@@ -2,6 +2,21 @@
 
 ## Unreleased
 
+## v0.0.13 - Download mode selection
+
+### Added
+- Download mode selection
+- Best Quality - video w/ audio
+- Video Only - video w/o audio.
+- Audio Only - just audio
+
+### Altered
+- Selected download mode now passed through the download worker to yt-dlp
+- Video Only downloads prefer WebM video streams - mp4 downloads were bugged (will be investigated in a later version)
+
+### Notes 
+- Need to look into file type issues, will likely need to work directly with ffmpeg
+
 ## v0.0.12 - Save location picker
 
 ### Added

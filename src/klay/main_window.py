@@ -1,7 +1,8 @@
 from PySide6.QtWidgets import (
+    QComboBox,
     QFileDialog,
-    QLineEdit,
     QLabel,
+    QLineEdit,
     QMainWindow,
     QMessageBox,
     QProgressBar,
@@ -11,9 +12,10 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import QThread
 
-from klay.download_worker import DownloadWorker
 from klay.analysis_worker import AnalysisWorker
+from klay.download_worker import DownloadWorker
 from klay.downloader import is_valid_url
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -23,11 +25,6 @@ class MainWindow(QMainWindow):
         self.resize(800, 500)
 
         self.output_directory = None
-
-        self.folder_button = QPushButton("Choose Download Folder")
-        self.folder_button.clicked.connect(self.choose_output_directory)
-
-        self.folder_label = QLabel("Download folder: Default")
 
         self.url_input = QLineEdit()
         self.url_input.setPlaceholderText("Paste or enter a URL")
@@ -40,6 +37,18 @@ class MainWindow(QMainWindow):
         self.duration_label = QLabel("Duration: —")
         self.resolution_label = QLabel("Best resolution: —")
 
+        self.folder_button = QPushButton("Choose Download Folder")
+        self.folder_button.clicked.connect(self.choose_output_directory)
+
+        self.folder_label = QLabel("Download folder: Default")
+
+        self.format_selector = QComboBox()
+        self.format_selector.addItems([
+            "Best Quality",
+            "Video Only",
+            "Audio Only",
+        ])
+
         self.download_button = QPushButton("Download")
         self.download_button.clicked.connect(self.handle_download)
 
@@ -50,18 +59,19 @@ class MainWindow(QMainWindow):
         self.download_active = False
 
         layout = QVBoxLayout()
+
         layout.addWidget(self.url_input)
         layout.addWidget(self.analyze_button)
-
-        layout.addWidget(self.folder_button)
-        layout.addWidget(self.folder_label)
-        layout.addWidget(self.download_button)
 
         layout.addWidget(self.title_label)
         layout.addWidget(self.uploader_label)
         layout.addWidget(self.duration_label)
         layout.addWidget(self.resolution_label)
-        
+
+        layout.addWidget(self.folder_button)
+        layout.addWidget(self.folder_label)
+
+        layout.addWidget(self.format_selector)
         layout.addWidget(self.download_button)
         layout.addWidget(self.progress_bar)
 
@@ -105,10 +115,16 @@ class MainWindow(QMainWindow):
         self.analysis_worker.finished.connect(self.analysis_thread.quit)
         self.analysis_worker.failed.connect(self.analysis_thread.quit)
 
-        self.analysis_worker.finished.connect(self.analysis_worker.deleteLater)
-        self.analysis_worker.failed.connect(self.analysis_worker.deleteLater)
+        self.analysis_worker.finished.connect(
+            self.analysis_worker.deleteLater
+        )
+        self.analysis_worker.failed.connect(
+            self.analysis_worker.deleteLater
+        )
 
-        self.analysis_thread.finished.connect(self.analysis_thread.deleteLater)
+        self.analysis_thread.finished.connect(
+            self.analysis_thread.deleteLater
+        )
 
         self.analysis_thread.start()
 
@@ -143,6 +159,8 @@ class MainWindow(QMainWindow):
             )
             return
 
+        download_mode = self.format_selector.currentText()
+
         self.download_active = True
         self.download_button.setEnabled(False)
         self.progress_bar.setValue(0)
@@ -151,6 +169,7 @@ class MainWindow(QMainWindow):
         self.worker = DownloadWorker(
             url,
             self.output_directory,
+            download_mode,
         )
 
         self.worker.moveToThread(self.thread)
@@ -178,13 +197,16 @@ class MainWindow(QMainWindow):
         self.analyze_button.setEnabled(True)
 
         title = info.get("title") or "Unknown title"
+
         uploader = (
             info.get("uploader")
             or info.get("channel")
             or "Unknown uploader"
         )
 
-        duration = self.format_duration(info.get("duration"))
+        duration = self.format_duration(
+            info.get("duration")
+        )
 
         formats = info.get("formats", [])
 
@@ -202,9 +224,15 @@ class MainWindow(QMainWindow):
             else "Unknown"
         )
 
-        self.title_label.setText(f"Title: {title}")
-        self.uploader_label.setText(f"Uploader: {uploader}")
-        self.duration_label.setText(f"Duration: {duration}")
+        self.title_label.setText(
+            f"Title: {title}"
+        )
+        self.uploader_label.setText(
+            f"Uploader: {uploader}"
+        )
+        self.duration_label.setText(
+            f"Duration: {duration}"
+        )
         self.resolution_label.setText(
             f"Best resolution: {resolution}"
         )
@@ -215,7 +243,9 @@ class MainWindow(QMainWindow):
         self.title_label.setText("Title: —")
         self.uploader_label.setText("Uploader: —")
         self.duration_label.setText("Duration: —")
-        self.resolution_label.setText("Best resolution: —")
+        self.resolution_label.setText(
+            "Best resolution: —"
+        )
 
         QMessageBox.critical(
             self,
@@ -227,11 +257,21 @@ class MainWindow(QMainWindow):
         if seconds is None:
             return "Unknown"
 
-        minutes, seconds = divmod(int(seconds), 60)
-        hours, minutes = divmod(minutes, 60)
+        minutes, seconds = divmod(
+            int(seconds),
+            60,
+        )
+        hours, minutes = divmod(
+            minutes,
+            60,
+        )
 
         if hours:
-            return f"{hours}:{minutes:02}:{seconds:02}"
+            return (
+                f"{hours}:"
+                f"{minutes:02}:"
+                f"{seconds:02}"
+            )
 
         return f"{minutes}:{seconds:02}"
 
@@ -245,7 +285,6 @@ class MainWindow(QMainWindow):
             "Download Complete",
             "The download completed successfully.",
         )
-
 
     def download_failed(self):
         self.download_active = False

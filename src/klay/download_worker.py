@@ -9,18 +9,26 @@ class DownloadWorker(QObject):
     failed = Signal()
     progress = Signal(int)
 
-    def __init__(self, url: str, output_directory=None):
+    def __init__(
+        self,
+        url: str,
+        output_directory=None,
+        download_mode="Best Quality",
+    ):
         super().__init__()
+
         self.url = url
         self.output_directory = output_directory
+        self.download_mode = download_mode
 
     @Slot()
     def run(self):
         try:
             download(
-                self.url, 
+                self.url,
                 progress_hook=self.handle_progress,
                 output_directory=self.output_directory,
+                download_mode=self.download_mode,
             )
         except DownloadError:
             self.failed.emit()

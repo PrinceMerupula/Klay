@@ -5,7 +5,7 @@ A simple GUI using yt-dlp to help non-technical users download videos and other 
 Very early development
 
 ## Current Milestone
-v0.0.12 - Save location picker
+v0.0.13 - Download mode selection
 
 ## Planned stack
 - Python
