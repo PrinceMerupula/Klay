@@ -5,7 +5,7 @@ A simple GUI using yt-dlp to help non-technical users download videos and other 
 Very early development
 
 ## Current Milestone
-v0.0.14 - Selectable video quality
+v0.0.15 - Audio output format + conversion
 
 ## Planned stack
 - Python

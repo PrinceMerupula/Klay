@@ -2,7 +2,21 @@
 
 ## Unreleased
 
+## v0.0.15 - Audio output format + conversion
+
+### Added 
+- Audio output format selection for audio only downloads
+- MP3 and M4A conversion through yt-dlp via FFmpeg
+- Download controls are now context-aware and will be grayed out when inapplicable
+
+### Altered
+- Renamed "Best Quality" to "Video + Audio" for clarity
+- Audio format selection disabled for video downlad modes
+- Video resolution selection disabled for audio download mode
+
 ## v0.0.14 - Selectable video quality
+
+### Added
 - Selectable video quality based on resolutions after media analysis
 - Quality options populated from available formats in yt-dlp
 - "Best available" downloads maximum quality available

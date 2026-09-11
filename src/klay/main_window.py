@@ -44,13 +44,27 @@ class MainWindow(QMainWindow):
 
         self.format_selector = QComboBox()
         self.format_selector.addItems([
-            "Best Quality",
+            "Video + Audio",
             "Video Only",
             "Audio Only",
         ])
 
         self.quality_selector = QComboBox()
         self.quality_selector.addItem("Best Available")
+
+        self.audio_format_selector = QComboBox()
+        self.audio_format_selector.addItems([
+            "Original",
+            "MP3",
+            "M4A",
+        ])
+
+        self.format_selector.currentTextChanged.connect(
+            self.update_download_options
+        )
+        self.update_download_options(
+            self.format_selector.currentText()
+        )
 
         self.download_button = QPushButton("Download")
         self.download_button.clicked.connect(self.handle_download)
@@ -76,6 +90,7 @@ class MainWindow(QMainWindow):
 
         layout.addWidget(self.format_selector)
         layout.addWidget(self.quality_selector)
+        layout.addWidget(self.audio_format_selector)
         layout.addWidget(self.download_button)
         layout.addWidget(self.progress_bar)
 
@@ -144,6 +159,12 @@ class MainWindow(QMainWindow):
                 f"Download folder: {directory}"
             )
 
+    def update_download_options(self, download_mode):
+        audio_only = download_mode == "Audio Only"
+
+        self.quality_selector.setEnabled(not audio_only)
+        self.audio_format_selector.setEnabled(audio_only)
+
     def handle_download(self):
         url = self.url_input.text().strip()
 
@@ -164,6 +185,7 @@ class MainWindow(QMainWindow):
             return
 
         download_mode = self.format_selector.currentText()
+        audio_format = self.audio_format_selector.currentText()
 
         selected_quality = self.quality_selector.currentText()
 
@@ -182,6 +204,7 @@ class MainWindow(QMainWindow):
             self.output_directory,
             download_mode,
             max_height,
+            audio_format,
         )
 
         self.worker.moveToThread(self.thread)

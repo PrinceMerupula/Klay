@@ -18,6 +18,7 @@ def download(
     output_directory=None,
     download_mode="Best Quality",
     max_height=None,
+    audio_format="Original",
 ) -> None:
     options = {}
 
@@ -55,6 +56,23 @@ def download(
 
     elif download_mode == "Audio Only":
         options["format"] = "bestaudio"
+
+        if audio_format == "MP3":
+            options["postprocessors"] = [
+                {
+                    "key": "FFmpegExtractAudio",
+                    "preferredcodec": "mp3",
+                    "preferredquality": "192",
+                }
+            ]
+
+        elif audio_format == "M4A":
+            options["postprocessors"] = [
+                {
+                    "key": "FFmpegExtractAudio",
+                    "preferredcodec": "m4a",
+                }
+            ]
 
     with yt_dlp.YoutubeDL(options) as ydl:
         ydl.download([url])

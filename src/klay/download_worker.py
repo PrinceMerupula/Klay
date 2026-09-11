@@ -13,8 +13,9 @@ class DownloadWorker(QObject):
         self,
         url: str,
         output_directory=None,
-        download_mode="Best Quality",
+        download_mode="Video + Audio",
         max_height=None,
+        audio_format="Original",
     ):
         super().__init__()
 
@@ -22,6 +23,7 @@ class DownloadWorker(QObject):
         self.output_directory = output_directory
         self.download_mode = download_mode
         self.max_height = max_height
+        self.audio_format = audio_format
 
     @Slot()
     def run(self):
@@ -32,6 +34,7 @@ class DownloadWorker(QObject):
                 output_directory=self.output_directory,
                 download_mode=self.download_mode,
                 max_height=self.max_height,
+                audio_format=self.audio_format,
             )
         except DownloadError:
             self.failed.emit()
