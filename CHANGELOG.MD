@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## v0.0.4 - yt-dlp Addition
+
+### Added
+- Yt-dlp added as an app dependency
+- Created a separate downloader.py to handle downloads
+- Very basic downloading done through yt-dlp Python API (not through window, integration to be added later)
+
 ## v0.0.3 - Basic download interface
 
 ### Added
