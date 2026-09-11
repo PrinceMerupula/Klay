@@ -1,14 +1,14 @@
 import sys
 
-from PySide6.QtWidgets import QApplication, QMainWindow
+from PySide6.QtWidgets import QApplication
+
+from klay.main_window import MainWindow
 
 
 def main():
     app = QApplication(sys.argv)
 
-    window = QMainWindow()
-    window.setWindowTitle("Klay")
-    window.resize(800, 500)
+    window = MainWindow()
     window.show()
 
     sys.exit(app.exec())
