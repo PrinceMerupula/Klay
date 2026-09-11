@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+## v0.0.17 - Persistent preferences and logical defaults
+
+### Added
+- QSettings used for persistent user preferences
+- QStandardPaths used to set default download directory (user Downloads folder)
+- If a standard Downloads location can't be found/resolved, defaults to home directory
+- Restores previous selected download mode, audio format, and download folder
+
+### Altered
+- Downloads will default to the Downloads folder if possible unless changed by the user
+- Download options will restore correct on/off states based on saved download mode
+
 ## v0.0.16 - Download cancellation
 
 ### Added

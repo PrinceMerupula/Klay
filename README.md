@@ -5,7 +5,7 @@ A simple GUI using yt-dlp to help non-technical users download videos and other 
 Very early development
 
 ## Current Milestone
-v0.0.16 - Download cancellation
+v0.0.17 - Persistent preferences and logical defaults
 
 ## Planned stack
 - Python

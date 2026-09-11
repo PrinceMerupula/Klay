@@ -10,7 +10,12 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
-from PySide6.QtCore import QThread
+from PySide6.QtCore import (
+    QDir,
+    QSettings, 
+    QStandardPaths, 
+    QThread
+)
 
 from klay.analysis_worker import AnalysisWorker
 from klay.download_worker import DownloadWorker
@@ -18,13 +23,25 @@ from klay.downloader import is_valid_url
 
 
 class MainWindow(QMainWindow):
+
     def __init__(self):
         super().__init__()
 
         self.setWindowTitle("Klay")
         self.resize(800, 500)
 
-        self.output_directory = None
+        self.settings = QSettings("Klay", "Klay")
+
+        self.default_output_directory = QStandardPaths.writableLocation(
+            QStandardPaths.DownloadLocation
+        )
+
+        if not self.default_output_directory:
+            self.default_output_directory = QStandardPaths.writableLocation(
+                QStandardPaths.HomeLocation
+            )
+
+        self.output_directory = self.load_output_directory()
 
         self.url_input = QLineEdit()
         self.url_input.setPlaceholderText("Paste or enter a URL")
@@ -40,7 +57,9 @@ class MainWindow(QMainWindow):
         self.folder_button = QPushButton("Choose Download Folder")
         self.folder_button.clicked.connect(self.choose_output_directory)
 
-        self.folder_label = QLabel("Download folder: Default")
+        self.folder_label = QLabel(
+            f"Download folder: {self.output_directory}"
+        )
 
         self.format_selector = QComboBox()
         self.format_selector.addItems([
@@ -48,6 +67,14 @@ class MainWindow(QMainWindow):
             "Video Only",
             "Audio Only",
         ])
+
+        saved_download_mode = self.settings.value(
+            "download_mode",
+            "Video + Audio",
+        )
+
+        if self.format_selector.findText(saved_download_mode) >= 0:
+            self.format_selector.setCurrentText(saved_download_mode)
 
         self.quality_selector = QComboBox()
         self.quality_selector.addItem("Best Available")
@@ -59,9 +86,24 @@ class MainWindow(QMainWindow):
             "M4A",
         ])
 
+        saved_audio_format = self.settings.value(
+            "audio_format",
+            "Original",
+        )
+
+        if self.audio_format_selector.findText(saved_audio_format) >= 0:
+            self.audio_format_selector.setCurrentText(saved_audio_format)
+
         self.format_selector.currentTextChanged.connect(
             self.update_download_options
         )
+        self.format_selector.currentTextChanged.connect(
+            self.save_download_mode
+        )
+        self.audio_format_selector.currentTextChanged.connect(
+            self.save_audio_format
+        )
+
         self.update_download_options(
             self.format_selector.currentText()
         )
@@ -152,6 +194,29 @@ class MainWindow(QMainWindow):
 
         self.analysis_thread.start()
 
+    def load_output_directory(self):
+        saved_directory = self.settings.value(
+            "output_directory",
+            self.default_output_directory,
+        )
+
+        if saved_directory and QDir(saved_directory).exists():
+            return saved_directory
+
+        return self.default_output_directory
+
+    def save_download_mode(self, download_mode):
+        self.settings.setValue(
+            "download_mode",
+            download_mode,
+        )
+
+    def save_audio_format(self, audio_format):
+        self.settings.setValue(
+            "audio_format",
+            audio_format,
+        )
+
     def choose_output_directory(self):
         directory = QFileDialog.getExistingDirectory(
             self,
@@ -160,6 +225,10 @@ class MainWindow(QMainWindow):
 
         if directory:
             self.output_directory = directory
+            self.settings.setValue(
+                "output_directory",
+                directory,
+            )
             self.folder_label.setText(
                 f"Download folder: {directory}"
             )
