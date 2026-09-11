@@ -2,6 +2,19 @@
 
 ## Unreleased
 
+## v0.0.11 - Richer metadata preview
+
+### Added
+- Richer media metadata preview after analysis
+- Shows:
+-  Media title
+-  Uploader/channel name
+-  media duration
+-  Best available video resolution
+
+### Altered
+- Metadata preview no longer only shows title, 3 additional details now shown
+
 ## v0.0.10 - Background metadata analysis
 
 ### Added

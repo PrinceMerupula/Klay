@@ -27,7 +27,10 @@ class MainWindow(QMainWindow):
         self.analyze_button = QPushButton("Analyze")
         self.analyze_button.clicked.connect(self.handle_analyze)
 
-        self.title_label = QLabel("No media analyzed")
+        self.title_label = QLabel("Title: —")
+        self.uploader_label = QLabel("Uploader: —")
+        self.duration_label = QLabel("Duration: —")
+        self.resolution_label = QLabel("Best resolution: —")
 
         self.download_button = QPushButton("Download")
         self.download_button.clicked.connect(self.handle_download)
@@ -41,7 +44,12 @@ class MainWindow(QMainWindow):
         layout = QVBoxLayout()
         layout.addWidget(self.url_input)
         layout.addWidget(self.analyze_button)
+
         layout.addWidget(self.title_label)
+        layout.addWidget(self.uploader_label)
+        layout.addWidget(self.duration_label)
+        layout.addWidget(self.resolution_label)
+        
         layout.addWidget(self.download_button)
         layout.addWidget(self.progress_bar)
 
@@ -142,19 +150,63 @@ class MainWindow(QMainWindow):
     def analysis_finished(self, info):
         self.analyze_button.setEnabled(True)
 
-        title = info.get("title", "Unknown title")
-        self.title_label.setText(title)
+        title = info.get("title") or "Unknown title"
+        uploader = (
+            info.get("uploader")
+            or info.get("channel")
+            or "Unknown uploader"
+        )
 
+        duration = self.format_duration(info.get("duration"))
+
+        formats = info.get("formats", [])
+
+        heights = [
+            format_info.get("height")
+            for format_info in formats
+            if format_info.get("height")
+        ]
+
+        best_height = max(heights) if heights else None
+
+        resolution = (
+            f"{best_height}p"
+            if best_height
+            else "Unknown"
+        )
+
+        self.title_label.setText(f"Title: {title}")
+        self.uploader_label.setText(f"Uploader: {uploader}")
+        self.duration_label.setText(f"Duration: {duration}")
+        self.resolution_label.setText(
+            f"Best resolution: {resolution}"
+        )
 
     def analysis_failed(self):
         self.analyze_button.setEnabled(True)
-        self.title_label.setText("No media analyzed")
+
+        self.title_label.setText("Title: —")
+        self.uploader_label.setText("Uploader: —")
+        self.duration_label.setText("Duration: —")
+        self.resolution_label.setText("Best resolution: —")
 
         QMessageBox.critical(
             self,
             "Analysis Failed",
             "Klay could not retrieve information for this URL.",
         )
+
+    def format_duration(self, seconds):
+        if seconds is None:
+            return "Unknown"
+
+        minutes, seconds = divmod(int(seconds), 60)
+        hours, minutes = divmod(minutes, 60)
+
+        if hours:
+            return f"{hours}:{minutes:02}:{seconds:02}"
+
+        return f"{minutes}:{seconds:02}"
 
     def download_finished(self):
         self.download_active = False
