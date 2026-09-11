@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+## v0.0.10 - Background metadata analysis
+
+### Added
+- Qt worker thread that does metadata analysis in background
+- Analysis worker to retrieve media info w/o blocking interface
+- Signals return metadata and analysis failures to main GUI
+- During metadata retrieval, show that the analysis is occurring by displaying an "Analyzing" status
+
+### Altered
+- Media analysis won't block the main GUI thread while analysis occurs
+- Analyze button disabled during analysis
+
 ## v0.0.9 - Media metadata preview
 
 ### Added

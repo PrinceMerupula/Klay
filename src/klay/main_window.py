@@ -10,10 +10,9 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import QThread
 
-from yt_dlp.utils import DownloadError
-
 from klay.download_worker import DownloadWorker
-from klay.downloader import get_media_info, is_valid_url
+from klay.analysis_worker import AnalysisWorker
+from klay.downloader import is_valid_url
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -70,18 +69,28 @@ class MainWindow(QMainWindow):
             )
             return
 
-        try:
-            info = get_media_info(url)
-        except DownloadError:
-            QMessageBox.critical(
-                self,
-                "Analysis Failed",
-                "Klay could not retrieve information for this URL.",
-            )
-            return
+        self.analyze_button.setEnabled(False)
+        self.title_label.setText("Analyzing...")
 
-        title = info.get("title", "Unknown title")
-        self.title_label.setText(title)
+        self.analysis_thread = QThread()
+        self.analysis_worker = AnalysisWorker(url)
+
+        self.analysis_worker.moveToThread(self.analysis_thread)
+
+        self.analysis_thread.started.connect(self.analysis_worker.run)
+
+        self.analysis_worker.finished.connect(self.analysis_finished)
+        self.analysis_worker.failed.connect(self.analysis_failed)
+
+        self.analysis_worker.finished.connect(self.analysis_thread.quit)
+        self.analysis_worker.failed.connect(self.analysis_thread.quit)
+
+        self.analysis_worker.finished.connect(self.analysis_worker.deleteLater)
+        self.analysis_worker.failed.connect(self.analysis_worker.deleteLater)
+
+        self.analysis_thread.finished.connect(self.analysis_thread.deleteLater)
+
+        self.analysis_thread.start()
 
     def handle_download(self):
         url = self.url_input.text().strip()
@@ -121,7 +130,7 @@ class MainWindow(QMainWindow):
         self.worker.failed.connect(self.thread.quit)
 
         self.worker.finished.connect(self.worker.deleteLater)
-        self.worker.finished.connect(self.thread.deleteLater)
+        self.worker.failed.connect(self.worker.deleteLater)
 
         self.thread.finished.connect(self.thread.deleteLater)
 
@@ -129,6 +138,23 @@ class MainWindow(QMainWindow):
 
     def update_progress(self, percentage):
         self.progress_bar.setValue(percentage)
+
+    def analysis_finished(self, info):
+        self.analyze_button.setEnabled(True)
+
+        title = info.get("title", "Unknown title")
+        self.title_label.setText(title)
+
+
+    def analysis_failed(self):
+        self.analyze_button.setEnabled(True)
+        self.title_label.setText("No media analyzed")
+
+        QMessageBox.critical(
+            self,
+            "Analysis Failed",
+            "Klay could not retrieve information for this URL.",
+        )
 
     def download_finished(self):
         self.download_active = False
