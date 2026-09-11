@@ -12,8 +12,11 @@ def is_valid_url(url: str) -> bool:
     )
 
 
-def download(url: str) -> None:
+def download(url: str, progress_hook = None) -> None:
     options = {}
+
+    if progress_hook is not None:
+        options["progress_hooks"] = [progress_hook]
 
     with yt_dlp.YoutubeDL(options) as ydl:
         ydl.download([url])

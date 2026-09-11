@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+## v0.0.8 - Download progress bar
+
+### Added
+- yt-dlp reports download progress
+- Progress updates from background worker to GUI
+- GUI shows a progress for active downloads
+- Progress bar ignores rollback updates due to multi-stream downloads
+
 ## v0.0.7 - Background downloading 
 
 ### Added
@@ -11,6 +19,9 @@
 - Download button disabled while download is active (multiple concurrent downloads likely to be added at a later time)
 - User-facing notif when a download is successful
 - Protecting against closing app while download is ongoing
+
+### Altered
+- yt-dlp downloads don't block main GUI thread 
 
 ## v0.0.6 - Basic URL validation and error handling
 

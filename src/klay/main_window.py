@@ -2,13 +2,14 @@ from PySide6.QtWidgets import (
     QLineEdit,
     QMainWindow,
     QMessageBox,
+    QProgressBar,
     QPushButton,
     QVBoxLayout,
     QWidget,
 )
 from PySide6.QtCore import QThread
 
-from klay.downloader import download, is_valid_url
+from klay.downloader import is_valid_url
 from klay.download_worker import DownloadWorker
 
 class MainWindow(QMainWindow):
@@ -23,11 +24,17 @@ class MainWindow(QMainWindow):
 
         self.download_button = QPushButton("Download")
         self.download_button.clicked.connect(self.handle_download)
+
+        self.progress_bar = QProgressBar()
+        self.progress_bar.setRange(0, 100)
+        self.progress_bar.setValue(0)
+
         self.download_active = False
 
         layout = QVBoxLayout()
         layout.addWidget(self.url_input)
         layout.addWidget(self.download_button)
+        layout.addWidget(self.progress_bar)
 
         container = QWidget()
         container.setLayout(layout)
@@ -55,6 +62,7 @@ class MainWindow(QMainWindow):
 
         self.download_active = True
         self.download_button.setEnabled(False)
+        self.progress_bar.setValue(0)
 
         self.thread = QThread()
         self.worker = DownloadWorker(url)
@@ -63,20 +71,30 @@ class MainWindow(QMainWindow):
 
         self.thread.started.connect(self.worker.run)
 
+        self.worker.progress.connect(self.update_progress)
         self.worker.finished.connect(self.download_finished)
         self.worker.failed.connect(self.download_failed)
 
         self.worker.finished.connect(self.thread.quit)
         self.worker.failed.connect(self.thread.quit)
 
-        self.thread.finished.connect(self.worker.deleteLater)
+        self.worker.finished.connect(self.worker.deleteLater)
+        self.worker.finished.connect(self.thread.deleteLater)
+
         self.thread.finished.connect(self.thread.deleteLater)
 
         self.thread.start()
 
+    def update_progress(self, percentage):
+        current_percentage = self.progress_bar.value()
+
+        if percentage > current_percentage:
+            self.progress_bar.setValue(percentage)
+
     def download_finished(self):
         self.download_active = False
         self.download_button.setEnabled(True)
+        self.progress_bar.setValue(100)
 
         QMessageBox.information(
             self,
