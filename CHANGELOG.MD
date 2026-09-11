@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+## v0.0.7 - Background downloading 
+
+### Added
+- Processing downloads in the background via Qt threads
+- Download worker runs yt-dlp without blocking interface
+- Download successes and failures shown on main window
+- Download button disabled while download is active (multiple concurrent downloads likely to be added at a later time)
+- User-facing notif when a download is successful
+- Protecting against closing app while download is ongoing
+
 ## v0.0.6 - Basic URL validation and error handling
 
 ### Added
