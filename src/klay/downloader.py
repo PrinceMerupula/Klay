@@ -11,11 +11,13 @@ def is_valid_url(url: str) -> bool:
         and bool(parsed_url.netloc)
     )
 
+
 def download(
     url: str,
     progress_hook=None,
     output_directory=None,
     download_mode="Best Quality",
+    max_height=None,
 ) -> None:
     options = {}
 
@@ -28,16 +30,35 @@ def download(
         }
 
     if download_mode == "Best Quality":
-        options["format"] = "bestvideo+bestaudio/best"
+        if max_height is None:
+            options["format"] = (
+                "bestvideo+bestaudio/best"
+            )
+        else:
+            options["format"] = (
+                f"bestvideo[height<={max_height}]"
+                f"+bestaudio/"
+                f"best[height<={max_height}]"
+            )
 
     elif download_mode == "Video Only":
-        options["format"] = "bestvideo[ext=webm]/bestvideo"
+        if max_height is None:
+            options["format"] = (
+                "bestvideo[ext=webm]/bestvideo"
+            )
+        else:
+            options["format"] = (
+                f"bestvideo[ext=webm]"
+                f"[height<={max_height}]/"
+                f"bestvideo[height<={max_height}]"
+            )
 
     elif download_mode == "Audio Only":
         options["format"] = "bestaudio"
 
     with yt_dlp.YoutubeDL(options) as ydl:
         ydl.download([url])
+
 
 def get_media_info(url: str) -> dict:
     options = {
@@ -46,6 +67,9 @@ def get_media_info(url: str) -> dict:
     }
 
     with yt_dlp.YoutubeDL(options) as ydl:
-        info = ydl.extract_info(url, download=False)
+        info = ydl.extract_info(
+            url,
+            download=False,
+        )
 
     return info

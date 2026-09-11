@@ -2,6 +2,20 @@
 
 ## Unreleased
 
+## v0.0.14 - Selectable video quality
+- Selectable video quality based on resolutions after media analysis
+- Quality options populated from available formats in yt-dlp
+- "Best available" downloads maximum quality available
+
+### Altered
+- Selected video quality now passed to yt-dlp through download worker 
+- Best Quality and Video Only modes download based on maximum selected resolution
+- Audio Only mode ignores video settings
+
+### Notes
+- Simplify resolution options in the future (can remove things like 90p since they'd likely never be used)
+- Improve UI and remove video resolutions from audio only mode in future
+
 ## v0.0.13 - Download mode selection
 
 ### Added

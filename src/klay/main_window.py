@@ -49,6 +49,9 @@ class MainWindow(QMainWindow):
             "Audio Only",
         ])
 
+        self.quality_selector = QComboBox()
+        self.quality_selector.addItem("Best Available")
+
         self.download_button = QPushButton("Download")
         self.download_button.clicked.connect(self.handle_download)
 
@@ -72,6 +75,7 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.folder_label)
 
         layout.addWidget(self.format_selector)
+        layout.addWidget(self.quality_selector)
         layout.addWidget(self.download_button)
         layout.addWidget(self.progress_bar)
 
@@ -161,6 +165,13 @@ class MainWindow(QMainWindow):
 
         download_mode = self.format_selector.currentText()
 
+        selected_quality = self.quality_selector.currentText()
+
+        if selected_quality == "Best Available":
+            max_height = None
+        else:
+            max_height = int(selected_quality.removesuffix("p"))
+
         self.download_active = True
         self.download_button.setEnabled(False)
         self.progress_bar.setValue(0)
@@ -170,6 +181,7 @@ class MainWindow(QMainWindow):
             url,
             self.output_directory,
             download_mode,
+            max_height,
         )
 
         self.worker.moveToThread(self.thread)
@@ -210,19 +222,36 @@ class MainWindow(QMainWindow):
 
         formats = info.get("formats", [])
 
-        heights = [
+        heights = {
             format_info.get("height")
             for format_info in formats
             if format_info.get("height")
-        ]
+        }
 
-        best_height = max(heights) if heights else None
+        available_heights = sorted(
+            heights,
+            reverse=True,
+        )
+
+        best_height = (
+            available_heights[0]
+            if available_heights
+            else None
+        )
 
         resolution = (
             f"{best_height}p"
             if best_height
             else "Unknown"
         )
+
+        self.quality_selector.clear()
+        self.quality_selector.addItem("Best Available")
+
+        for height in available_heights:
+            self.quality_selector.addItem(
+                f"{height}p"
+            )
 
         self.title_label.setText(
             f"Title: {title}"
@@ -246,6 +275,9 @@ class MainWindow(QMainWindow):
         self.resolution_label.setText(
             "Best resolution: —"
         )
+
+        self.quality_selector.clear()
+        self.quality_selector.addItem("Best Available")
 
         QMessageBox.critical(
             self,

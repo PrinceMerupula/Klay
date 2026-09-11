@@ -14,12 +14,14 @@ class DownloadWorker(QObject):
         url: str,
         output_directory=None,
         download_mode="Best Quality",
+        max_height=None,
     ):
         super().__init__()
 
         self.url = url
         self.output_directory = output_directory
         self.download_mode = download_mode
+        self.max_height = max_height
 
     @Slot()
     def run(self):
@@ -29,6 +31,7 @@ class DownloadWorker(QObject):
                 progress_hook=self.handle_progress,
                 output_directory=self.output_directory,
                 download_mode=self.download_mode,
+                max_height=self.max_height,
             )
         except DownloadError:
             self.failed.emit()
