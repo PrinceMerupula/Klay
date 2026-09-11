@@ -3,6 +3,10 @@ from urllib.parse import urlparse
 import yt_dlp
 
 
+class DownloadCanceled(Exception):
+    pass
+
+
 def is_valid_url(url: str) -> bool:
     parsed_url = urlparse(url)
 
@@ -11,12 +15,11 @@ def is_valid_url(url: str) -> bool:
         and bool(parsed_url.netloc)
     )
 
-
 def download(
     url: str,
     progress_hook=None,
     output_directory=None,
-    download_mode="Best Quality",
+    download_mode="Video + Audio",
     max_height=None,
     audio_format="Original",
 ) -> None:
@@ -30,7 +33,7 @@ def download(
             "home": output_directory,
         }
 
-    if download_mode == "Best Quality":
+    if download_mode == "Video + Audio":
         if max_height is None:
             options["format"] = (
                 "bestvideo+bestaudio/best"
@@ -76,7 +79,6 @@ def download(
 
     with yt_dlp.YoutubeDL(options) as ydl:
         ydl.download([url])
-
 
 def get_media_info(url: str) -> dict:
     options = {

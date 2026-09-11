@@ -2,6 +2,21 @@
 
 ## Unreleased
 
+## v0.0.16 - Download cancellation
+
+### Added
+ - Now able to cancel an active download
+ - Thread-safe cancellation requests between GUI and background download worker
+ - Separate handler for canceled downloads so user cancellation isn't reported as a failure
+ - Cancel button that's only available to click while a download is ongoing
+ 
+### Altered
+- Download controls return to default after download is canceled
+
+### Notes
+- .part files are kept on system, which means retrying a cancellation will continue where it was last (might be revisited in the future)
+- Cancellation handled properly rather than via a forcible termination of the download thread
+
 ## v0.0.15 - Audio output format + conversion
 
 ### Added 

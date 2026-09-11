@@ -69,6 +69,10 @@ class MainWindow(QMainWindow):
         self.download_button = QPushButton("Download")
         self.download_button.clicked.connect(self.handle_download)
 
+        self.cancel_button = QPushButton("Cancel")
+        self.cancel_button.clicked.connect(self.handle_cancel)
+        self.cancel_button.setEnabled(False)
+
         self.progress_bar = QProgressBar()
         self.progress_bar.setRange(0, 100)
         self.progress_bar.setValue(0)
@@ -92,6 +96,7 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.quality_selector)
         layout.addWidget(self.audio_format_selector)
         layout.addWidget(self.download_button)
+        layout.addWidget(self.cancel_button)
         layout.addWidget(self.progress_bar)
 
         container = QWidget()
@@ -196,6 +201,7 @@ class MainWindow(QMainWindow):
 
         self.download_active = True
         self.download_button.setEnabled(False)
+        self.cancel_button.setEnabled(True)
         self.progress_bar.setValue(0)
 
         self.thread = QThread()
@@ -214,16 +220,29 @@ class MainWindow(QMainWindow):
         self.worker.progress.connect(self.update_progress)
         self.worker.finished.connect(self.download_finished)
         self.worker.failed.connect(self.download_failed)
+        self.worker.canceled.connect(self.download_canceled)
 
         self.worker.finished.connect(self.thread.quit)
         self.worker.failed.connect(self.thread.quit)
+        self.worker.canceled.connect(self.thread.quit)
 
         self.worker.finished.connect(self.worker.deleteLater)
         self.worker.failed.connect(self.worker.deleteLater)
+        self.worker.canceled.connect(self.worker.deleteLater)
 
         self.thread.finished.connect(self.thread.deleteLater)
 
         self.thread.start()
+
+    def update_progress(self, percentage):
+        self.progress_bar.setValue(percentage)
+
+    def handle_cancel(self):
+        if not self.download_active:
+            return
+
+        self.cancel_button.setEnabled(False)
+        self.worker.request_cancel()
 
     def update_progress(self, percentage):
         self.progress_bar.setValue(percentage)
@@ -333,6 +352,7 @@ class MainWindow(QMainWindow):
     def download_finished(self):
         self.download_active = False
         self.download_button.setEnabled(True)
+        self.cancel_button.setEnabled(False)
         self.progress_bar.setValue(100)
 
         QMessageBox.information(
@@ -344,11 +364,24 @@ class MainWindow(QMainWindow):
     def download_failed(self):
         self.download_active = False
         self.download_button.setEnabled(True)
+        self.cancel_button.setEnabled(False)
 
         QMessageBox.critical(
             self,
             "Download Failed",
             "Klay could not download media from this URL.",
+        )
+
+    def download_canceled(self):
+        self.download_active = False
+        self.download_button.setEnabled(True)
+        self.cancel_button.setEnabled(False)
+        self.progress_bar.setValue(0)
+
+        QMessageBox.information(
+            self,
+            "Download Canceled",
+            "The download was canceled.",
         )
 
     def closeEvent(self, event):

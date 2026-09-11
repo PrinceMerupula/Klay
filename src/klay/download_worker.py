@@ -1,12 +1,15 @@
+from threading import Event
+
 from PySide6.QtCore import QObject, Signal, Slot
 from yt_dlp.utils import DownloadError
 
-from klay.downloader import download
+from klay.downloader import DownloadCanceled, download
 
 
 class DownloadWorker(QObject):
     finished = Signal()
     failed = Signal()
+    canceled = Signal()
     progress = Signal(int)
 
     def __init__(
@@ -25,8 +28,17 @@ class DownloadWorker(QObject):
         self.max_height = max_height
         self.audio_format = audio_format
 
+        self.cancel_event = Event()
+
+    def request_cancel(self):
+        self.cancel_event.set()
+    
     @Slot()
     def run(self):
+        if self.cancel_event.is_set():
+            self.canceled.emit()
+            return
+        
         try:
             download(
                 self.url,
@@ -36,12 +48,17 @@ class DownloadWorker(QObject):
                 max_height=self.max_height,
                 audio_format=self.audio_format,
             )
+        except DownloadCanceled:
+            self.canceled.emit()
         except DownloadError:
             self.failed.emit()
         else:
             self.finished.emit()
 
     def handle_progress(self, data):
+        if self.cancel_event.is_set():
+            raise DownloadCanceled()
+        
         if data["status"] != "downloading":
             return
 
