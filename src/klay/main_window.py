@@ -1,4 +1,5 @@
 from PySide6.QtWidgets import (
+    QFileDialog,
     QLineEdit,
     QLabel,
     QMainWindow,
@@ -20,6 +21,13 @@ class MainWindow(QMainWindow):
 
         self.setWindowTitle("Klay")
         self.resize(800, 500)
+
+        self.output_directory = None
+
+        self.folder_button = QPushButton("Choose Download Folder")
+        self.folder_button.clicked.connect(self.choose_output_directory)
+
+        self.folder_label = QLabel("Download folder: Default")
 
         self.url_input = QLineEdit()
         self.url_input.setPlaceholderText("Paste or enter a URL")
@@ -44,6 +52,10 @@ class MainWindow(QMainWindow):
         layout = QVBoxLayout()
         layout.addWidget(self.url_input)
         layout.addWidget(self.analyze_button)
+
+        layout.addWidget(self.folder_button)
+        layout.addWidget(self.folder_label)
+        layout.addWidget(self.download_button)
 
         layout.addWidget(self.title_label)
         layout.addWidget(self.uploader_label)
@@ -100,6 +112,18 @@ class MainWindow(QMainWindow):
 
         self.analysis_thread.start()
 
+    def choose_output_directory(self):
+        directory = QFileDialog.getExistingDirectory(
+            self,
+            "Choose Download Folder",
+        )
+
+        if directory:
+            self.output_directory = directory
+            self.folder_label.setText(
+                f"Download folder: {directory}"
+            )
+
     def handle_download(self):
         url = self.url_input.text().strip()
 
@@ -124,7 +148,10 @@ class MainWindow(QMainWindow):
         self.progress_bar.setValue(0)
 
         self.thread = QThread()
-        self.worker = DownloadWorker(url)
+        self.worker = DownloadWorker(
+            url,
+            self.output_directory,
+        )
 
         self.worker.moveToThread(self.thread)
 

@@ -11,11 +11,20 @@ def is_valid_url(url: str) -> bool:
         and bool(parsed_url.netloc)
     )
 
-def download(url: str, progress_hook = None) -> None:
+def download(
+    url: str,
+    progress_hook=None,
+    output_directory=None,
+) -> None:
     options = {}
 
     if progress_hook is not None:
         options["progress_hooks"] = [progress_hook]
+
+    if output_directory is not None:
+        options["paths"] = {
+            "home": output_directory,
+        }
 
     with yt_dlp.YoutubeDL(options) as ydl:
         ydl.download([url])

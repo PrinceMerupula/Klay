@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+## v0.0.12 - Save location picker
+
+### Added
+- Native folder picker allows user to select where the download will be saved to
+- Displays currently selected download location
+- Cchosen output directory passed to yt-dlp
+
+### Altered
+- Downloads occur in wherever the user selects, instead of the default app location
+- Canceling the folder picker keeps the previously selected download location
+
 ## v0.0.11 - Richer metadata preview
 
 ### Added
