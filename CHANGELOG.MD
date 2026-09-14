@@ -2,6 +2,20 @@
 
 ## Unreleased
 
+## v0.0.20 - Runtime and dependency fixes and clarification
+
+### Added
+- Check that FFmpeg is installed before starting downloads requiring processing via FFmpeg
+- Warn user when FFmpeg is unavailable
+
+### Altered
+- Updated yt-dlp dependency
+- Video + Audio and MP3/M4A audio only downloads now verify FFmpeg availability before starting
+- Video Only and Original audio downloads have the same behavior as before
+
+### Notes
+- Deno and FFmpeg are currently external dependencies and are not bundled (will be addressed in the near future)
+
 ## v0.0.19 - Output file actions
 
 ### Added 

@@ -25,6 +25,7 @@ from PySide6.QtGui import QDesktopServices
 from klay.analysis_worker import AnalysisWorker
 from klay.download_worker import DownloadWorker
 from klay.downloader import is_valid_url
+from klay.dependencies import is_ffmpeg_available
 
 
 class MainWindow(QMainWindow):
@@ -245,6 +246,18 @@ class MainWindow(QMainWindow):
         self.quality_selector.setEnabled(not audio_only)
         self.audio_format_selector.setEnabled(audio_only)
 
+    def download_requires_ffmpeg(self):
+        download_mode = self.format_selector.currentText()
+        audio_format = self.audio_format_selector.currentText()
+
+        if download_mode == "Video + Audio":
+            return True
+
+        if download_mode == "Audio Only":
+            return audio_format in ("MP3", "M4A")
+
+        return False
+
     def handle_download(self):
         url = self.url_input.text().strip()
 
@@ -261,6 +274,17 @@ class MainWindow(QMainWindow):
                 self,
                 "Invalid URL",
                 "Please enter a valid HTTP or HTTPS URL.",
+            )
+            return
+
+        if self.download_requires_ffmpeg() and not is_ffmpeg_available():
+            QMessageBox.warning(
+                self,
+                "FFmpeg Not Found",
+                (
+                    "FFmpeg is required for this download option.\n\n"
+                    "Install FFmpeg and restart Klay before trying again."
+                ),
             )
             return
 

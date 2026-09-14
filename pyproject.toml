@@ -10,7 +10,7 @@ readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
     "PySide6",
-    "yt-dlp",
+    "yt-dlp[default]",
 ]
 
 [project.scripts]
