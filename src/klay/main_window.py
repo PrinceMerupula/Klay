@@ -16,8 +16,11 @@ from PySide6.QtCore import (
     QDir,
     QSettings, 
     QStandardPaths, 
-    QThread
+    QThread,
+    QUrl,
 )
+
+from PySide6.QtGui import QDesktopServices
 
 from klay.analysis_worker import AnalysisWorker
 from klay.download_worker import DownloadWorker
@@ -431,7 +434,7 @@ class MainWindow(QMainWindow):
 
         if final_filepath:
             final_path = Path(final_filepath)
-            
+
             message = (
                 "The download completed successfully.\n\n"
                 f"{final_path.name}\n\n"
@@ -440,11 +443,36 @@ class MainWindow(QMainWindow):
         else:
             message = "The download completed successfully."
 
-        QMessageBox.information(
-            self,
-            "Download Complete",
-            message,
+        message_box = QMessageBox(self)
+        message_box.setWindowTitle("Download Complete")
+        message_box.setText(message)
+
+        open_file_button = None
+        show_folder_button = None
+
+        if final_filepath:
+            open_file_button = message_box.addButton(
+                "Open File",
+                QMessageBox.ActionRole,
+            )
+
+            show_folder_button = message_box.addButton(
+                "Show in Folder",
+                QMessageBox.ActionRole,
+            )
+
+        message_box.addButton(
+            QMessageBox.Ok,
         )
+
+        message_box.exec()
+
+        clicked_button = message_box.clickedButton()
+
+        if clicked_button == open_file_button:
+            self.open_last_downloaded_file()
+        elif clicked_button == show_folder_button:
+            self.show_last_download_in_folder()
 
     def download_failed(self):
         self.download_active = False
@@ -468,6 +496,56 @@ class MainWindow(QMainWindow):
             "Download Canceled",
             "The download was canceled.",
         )
+
+    def open_last_downloaded_file(self):
+        if not self.last_downloaded_file:
+            return
+
+        file_path = Path(self.last_downloaded_file)
+
+        if not file_path.exists():
+            QMessageBox.warning(
+                self,
+                "File Not Found",
+                "The downloaded file could not be found.",
+            )
+            return
+
+        opened = QDesktopServices.openUrl(
+            QUrl.fromLocalFile(str(file_path))
+        )
+
+        if not opened:
+            QMessageBox.warning(
+                self,
+                "Unable to Open File",
+                "Klay could not open the downloaded file.",
+            )
+    def show_last_download_in_folder(self):
+        if not self.last_downloaded_file:
+            return
+
+        file_path = Path(self.last_downloaded_file)
+        folder_path = file_path.parent
+
+        if not folder_path.exists():
+            QMessageBox.warning(
+                self,
+                "Folder Not Found",
+                "The download folder could not be found.",
+            )
+            return
+
+        opened = QDesktopServices.openUrl(
+            QUrl.fromLocalFile(str(folder_path))
+        )
+
+        if not opened:
+            QMessageBox.warning(
+                self,
+                "Unable to Open Folder",
+                "Klay could not open the download folder.",
+            )
 
     def closeEvent(self, event):
         if self.download_active:

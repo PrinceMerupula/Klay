@@ -2,6 +2,20 @@
 
 ## Unreleased
 
+## v0.0.19 - Output file actions
+
+### Added 
+- Can open the file (in the default system application) after download
+- Can show file in folder after download
+- Warns user if they try to open the file after deleting it
+
+### Altered
+- Download completion popup provides buttons for file actions
+
+### Notes
+- File actions use Qt File actions, should support cross-platform usage but may need additional testing
+- Show in Folder currently does not select the downloaded file, only opens the folder it's stored in
+
 ## v0.0.18 - Final output tracking
 
 ### Added

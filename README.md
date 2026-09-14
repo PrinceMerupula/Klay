@@ -5,8 +5,7 @@ A simple GUI using yt-dlp to help non-technical users download videos and other 
 Very early development
 
 ## Current Milestone
-v0.0.18 - Final output tracking
-
+v0.0.19 - Output file actions
 ## Planned stack
 - Python
 - PySide6
