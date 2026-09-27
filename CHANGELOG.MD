@@ -2,6 +2,23 @@
 
 ## Unreleased
 
+## v0.0.21 - Error handling and edge-cases
+
+### Added
+- Analysis state tracking to prevent application closing during metadata analysis
+- Guards preventing analysis and downloads from running concurrently
+
+### Altered
+- Editing URL automatically clears metadata and options from previously analyzed media
+- Analysis results discarded if URL changes during analysis
+- Failed downloads reset progress bar to 0
+- Users warned when attemtping to close application during analysis
+- Users warned when trying to conduct analysis during a download and vice-versa
+
+### Notes
+- .part files remain preserved after cancellation for ease of download resumption (may be changed)
+- Missing download output folders are automatically created upon download
+
 ## v0.0.20 - Runtime and dependency fixes and clarification
 
 ### Added

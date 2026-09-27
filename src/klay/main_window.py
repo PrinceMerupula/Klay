@@ -49,9 +49,11 @@ class MainWindow(QMainWindow):
 
         self.output_directory = self.load_output_directory()
         self.last_downloaded_file = None
+        self.analyzed_url = None
 
         self.url_input = QLineEdit()
         self.url_input.setPlaceholderText("Paste or enter a URL")
+        self.url_input.textChanged.connect(self.handle_url_changed)
 
         self.analyze_button = QPushButton("Analyze")
         self.analyze_button.clicked.connect(self.handle_analyze)
@@ -127,6 +129,7 @@ class MainWindow(QMainWindow):
         self.progress_bar.setValue(0)
 
         self.download_active = False
+        self.analysis_active = False
 
         layout = QVBoxLayout()
 
@@ -153,6 +156,17 @@ class MainWindow(QMainWindow):
 
         self.setCentralWidget(container)
 
+    def handle_url_changed(self):
+        self.analyzed_url = None
+
+        self.title_label.setText("Title: —")
+        self.uploader_label.setText("Uploader: —")
+        self.duration_label.setText("Duration: —")
+        self.resolution_label.setText("Best resolution: —")
+
+        self.quality_selector.clear()
+        self.quality_selector.addItem("Best Available")
+
     def handle_analyze(self):
         url = self.url_input.text().strip()
 
@@ -172,8 +186,18 @@ class MainWindow(QMainWindow):
             )
             return
 
+        if self.download_active:
+            QMessageBox.warning(
+                self,
+                "Download in Progress",
+                "Please wait for the current download to finish before analyzing.",
+            )
+            return
+
+        self.analysis_active = True
         self.analyze_button.setEnabled(False)
         self.title_label.setText("Analyzing...")
+        self.analyzed_url = url
 
         self.analysis_thread = QThread()
         self.analysis_worker = AnalysisWorker(url)
@@ -277,6 +301,14 @@ class MainWindow(QMainWindow):
             )
             return
 
+        if self.analysis_active:
+            QMessageBox.warning(
+                self,
+                "Analysis in Progress",
+                "Please wait for the current analysis to finish before downloading.",
+            )
+            return
+
         if self.download_requires_ffmpeg() and not is_ffmpeg_available():
             QMessageBox.warning(
                 self,
@@ -343,11 +375,12 @@ class MainWindow(QMainWindow):
         self.cancel_button.setEnabled(False)
         self.worker.request_cancel()
 
-    def update_progress(self, percentage):
-        self.progress_bar.setValue(percentage)
-
     def analysis_finished(self, info):
+        self.analysis_active = False
         self.analyze_button.setEnabled(True)
+
+        if self.url_input.text().strip() != self.analyzed_url:
+            return
 
         title = info.get("title") or "Unknown title"
 
@@ -408,6 +441,7 @@ class MainWindow(QMainWindow):
         )
 
     def analysis_failed(self):
+        self.analysis_active = False
         self.analyze_button.setEnabled(True)
 
         self.title_label.setText("Title: —")
@@ -502,6 +536,7 @@ class MainWindow(QMainWindow):
         self.download_active = False
         self.download_button.setEnabled(True)
         self.cancel_button.setEnabled(False)
+        self.progress_bar.setValue(0)
 
         QMessageBox.critical(
             self,
@@ -545,6 +580,7 @@ class MainWindow(QMainWindow):
                 "Unable to Open File",
                 "Klay could not open the downloaded file.",
             )
+
     def show_last_download_in_folder(self):
         if not self.last_downloaded_file:
             return
@@ -572,6 +608,14 @@ class MainWindow(QMainWindow):
             )
 
     def closeEvent(self, event):
+        if self.analysis_active:
+            QMessageBox.warning(
+                self,
+                "Analysis in Progress",
+                "Please wait for the current analysis to finish before closing Klay.",
+            )
+            event.ignore()
+            return
         if self.download_active:
             QMessageBox.warning(
                 self,
