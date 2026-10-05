@@ -2,6 +2,20 @@
 
 ## Unreleased
 
+## v0.0.22 - Packaging
+
+### Added
+- PyInstaller as dependency and established initial packaging workflow
+- Dependency resolution for FFmpeg, FFprobe, and Deno
+- Support for locating bundled binaries 
+- Progress state for post-processing after media download 
+
+### Altered
+- yt-dlp now uses resolved Deno and FFmpeg executables
+
+### Notes
+- Current macOS build uses x86-64 FFmpeg and FFprobe through Rosetta; native ARM64 binaries should be used for full release
+
 ## v0.0.21 - Error handling and edge-cases
 
 ### Added

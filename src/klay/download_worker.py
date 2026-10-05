@@ -11,6 +11,7 @@ class DownloadWorker(QObject):
     failed = Signal()
     canceled = Signal()
     progress = Signal(int)
+    processing = Signal()
 
     def __init__(
         self,
@@ -58,8 +59,14 @@ class DownloadWorker(QObject):
     def handle_progress(self, data):
         if self.cancel_event.is_set():
             raise DownloadCanceled()
-        
-        if data["status"] != "downloading":
+
+        status = data.get("status")
+
+        if status == "finished":
+            self.processing.emit()
+            return
+
+        if status != "downloading":
             return
 
         downloaded_bytes = data.get("downloaded_bytes", 0)

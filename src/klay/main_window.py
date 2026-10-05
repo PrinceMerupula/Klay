@@ -333,6 +333,7 @@ class MainWindow(QMainWindow):
         self.download_active = True
         self.download_button.setEnabled(False)
         self.cancel_button.setEnabled(True)
+        self.progress_bar.setRange(0, 100)
         self.progress_bar.setValue(0)
 
         self.thread = QThread()
@@ -349,6 +350,7 @@ class MainWindow(QMainWindow):
         self.thread.started.connect(self.worker.run)
 
         self.worker.progress.connect(self.update_progress)
+        self.worker.processing.connect(self.download_processing)
         self.worker.finished.connect(self.download_finished)
         self.worker.failed.connect(self.download_failed)
         self.worker.canceled.connect(self.download_canceled)
@@ -367,6 +369,9 @@ class MainWindow(QMainWindow):
 
     def update_progress(self, percentage):
         self.progress_bar.setValue(percentage)
+
+    def download_processing(self):
+        self.progress_bar.setRange(0, 0)
 
     def handle_cancel(self):
         if not self.download_active:
@@ -486,6 +491,7 @@ class MainWindow(QMainWindow):
         self.download_active = False
         self.download_button.setEnabled(True)
         self.cancel_button.setEnabled(False)
+        self.progress_bar.setRange(0, 100)
         self.progress_bar.setValue(100)
 
         self.last_downloaded_file = final_filepath
@@ -536,6 +542,7 @@ class MainWindow(QMainWindow):
         self.download_active = False
         self.download_button.setEnabled(True)
         self.cancel_button.setEnabled(False)
+        self.progress_bar.setRange(0, 100)
         self.progress_bar.setValue(0)
 
         QMessageBox.critical(
@@ -548,6 +555,7 @@ class MainWindow(QMainWindow):
         self.download_active = False
         self.download_button.setEnabled(True)
         self.cancel_button.setEnabled(False)
+        self.progress_bar.setRange(0, 100)
         self.progress_bar.setValue(0)
 
         QMessageBox.information(

@@ -2,10 +2,26 @@ from urllib.parse import urlparse
 
 import yt_dlp
 
+from klay.dependencies import get_deno_path, get_ffmpeg_path
+
 
 class DownloadCanceled(Exception):
     pass
 
+
+def get_base_options() -> dict:
+    options = {}
+
+    deno_path = get_deno_path()
+
+    if deno_path is not None:
+        options["js_runtimes"] = {
+            "deno": {
+                "path": deno_path,
+            }
+        }
+
+    return options
 
 def is_valid_url(url: str) -> bool:
     parsed_url = urlparse(url)
@@ -23,7 +39,12 @@ def download(
     max_height=None,
     audio_format="Original",
 ) -> str | None:
-    options = {}
+    options = get_base_options()
+
+    ffmpeg_path = get_ffmpeg_path()
+
+    if ffmpeg_path is not None:
+        options["ffmpeg_location"] = ffmpeg_path
 
     final_filepath = None
 
@@ -101,10 +122,12 @@ def download(
     return final_filepath
 
 def get_media_info(url: str) -> dict:
-    options = {
+    options = get_base_options()
+
+    options.update({
         "quiet": True,
         "skip_download": True,
-    }
+    })
 
     with yt_dlp.YoutubeDL(options) as ydl:
         info = ydl.extract_info(

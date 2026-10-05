@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "klay"
-version = "0.0.1"
+version = "0.0.22"
 description = "A simple desktop GUI for yt-dlp designed to make downloading online media accessible to non-technical users."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -19,6 +19,7 @@ klay = "klay.main:main"
 [dependency-groups]
 dev = [
     "pytest",
+    "pyinstaller",
 ]
 
 [tool.setuptools.packages.find]

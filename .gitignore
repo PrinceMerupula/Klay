@@ -1,5 +1,13 @@
 .venv/
+
 __pycache__/
 *.pyc
-.DS_Store
 *.egg-info/
+
+.DS_Store
+
+build/
+dist/
+*.spec
+
+packaging/bin/
