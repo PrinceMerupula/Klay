@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+## v0.0.23 - Pre-release bug fixes
+
+### Altered
+- URLs containing a video and playlist now only act on the video
+- Quality selector only lists available qualities
+- Unexpected errors during analysis or download logged and reported
+
+### Notes
+- URLs pointing only to a playlist still processes as a full playlist, likely would benefit from adding an option to users to select which videos to download
+
 ## v0.0.22 - Packaging
 
 ### Added

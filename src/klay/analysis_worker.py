@@ -1,7 +1,10 @@
+import logging
+
 from PySide6.QtCore import QObject, Signal, Slot
-from yt_dlp.utils import DownloadError
 
 from klay.downloader import get_media_info
+
+logger = logging.getLogger(__name__)
 
 
 class AnalysisWorker(QObject):
@@ -16,7 +19,8 @@ class AnalysisWorker(QObject):
     def run(self):
         try:
             info = get_media_info(self.url)
-        except DownloadError:
+        except Exception:
+            logger.exception("Analysis failed")
             self.failed.emit()
         else:
             self.finished.emit(info)

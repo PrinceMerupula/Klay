@@ -10,7 +10,9 @@ class DownloadCanceled(Exception):
 
 
 def get_base_options() -> dict:
-    options = {}
+    options = {
+        "noplaylist": True,
+    }
 
     deno_path = get_deno_path()
 

@@ -1,9 +1,11 @@
+import logging
 from threading import Event
 
 from PySide6.QtCore import QObject, Signal, Slot
-from yt_dlp.utils import DownloadError
 
 from klay.downloader import DownloadCanceled, download
+
+logger = logging.getLogger(__name__)
 
 
 class DownloadWorker(QObject):
@@ -51,7 +53,8 @@ class DownloadWorker(QObject):
             )
         except DownloadCanceled:
             self.canceled.emit()
-        except DownloadError:
+        except Exception:
+            logger.exception("Download failed")
             self.failed.emit()
         else:
             self.finished.emit(final_filepath)

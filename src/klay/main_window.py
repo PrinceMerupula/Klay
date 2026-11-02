@@ -404,7 +404,7 @@ class MainWindow(QMainWindow):
         heights = {
             format_info.get("height")
             for format_info in formats
-            if format_info.get("height")
+            if format_info.get("height") and format_info.get("vcodec") != "none"
         }
 
         available_heights = sorted(
