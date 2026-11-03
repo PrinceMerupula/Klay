@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+## v0.0.24 - Licensing and Automating Windows
+
+### Added
+- MIT License
+- Github Actions workflow for building x86-64 package (implemented using Claude Code)
+- Checksum and version verification for bundled FFmpeg and deno (implemented using Claude Code)
+
+### Altered
+- Windows package builds with Python 3.14 and bundles Deno 2.9.8 instead of 2.9.7
+- Minimum python version raised to 3.11
+
 ## v0.0.23 - Pre-release bug fixes
 
 ### Altered

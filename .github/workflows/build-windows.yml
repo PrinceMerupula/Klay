@@ -1,0 +1,98 @@
+name: Build Windows package
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  FFMPEG_TAG: autobuild-2026-10-31-18-18
+  FFMPEG_ZIP: ffmpeg-N-128251-g6d1bfd7609-win64-gpl.zip
+  FFMPEG_SHA256: 7c3535fd0e0960bbebb8bf8acc71292e855c97f58a628fd4f43aacc2adc16c87
+  DENO_VERSION: v2.9.8
+  DENO_SHA256: cba84b26e0df5ae7f74fc66b86a95b866872a86292ebd84fa1e959927edd93bf
+  BIN_DIR: packaging\bin\windows-x86_64
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.14"
+
+      - name: Install Klay and build tools
+        run: |
+          $PSNativeCommandUseErrorActionPreference = $true
+          python -m pip install --upgrade pip
+          python -m pip install .
+          python -m pip install --group dev
+
+      - name: Download and verify FFmpeg and Deno
+        run: |
+          $PSNativeCommandUseErrorActionPreference = $true
+          New-Item -ItemType Directory -Force $env:BIN_DIR | Out-Null
+
+          curl.exe -fsSL --retry 3 -o ffmpeg.zip "https://github.com/yt-dlp/FFmpeg-Builds/releases/download/$env:FFMPEG_TAG/$env:FFMPEG_ZIP"
+          curl.exe -fsSL --retry 3 -o deno.zip "https://github.com/denoland/deno/releases/download/$env:DENO_VERSION/deno-x86_64-pc-windows-msvc.zip"
+
+          if ((Get-FileHash ffmpeg.zip -Algorithm SHA256).Hash -ne $env:FFMPEG_SHA256) { throw "FFmpeg checksum mismatch" }
+          if ((Get-FileHash deno.zip -Algorithm SHA256).Hash -ne $env:DENO_SHA256) { throw "Deno checksum mismatch" }
+
+          Expand-Archive ffmpeg.zip ffmpeg-extracted
+          Expand-Archive deno.zip deno-extracted
+
+          Get-ChildItem ffmpeg-extracted -Recurse -Include ffmpeg.exe, ffprobe.exe | Copy-Item -Destination $env:BIN_DIR
+          Get-ChildItem deno-extracted -Recurse -Include deno.exe | Copy-Item -Destination $env:BIN_DIR
+
+      - name: Build with PyInstaller
+        run: |
+          $PSNativeCommandUseErrorActionPreference = $true
+          python -m PyInstaller --noconfirm --name Klay --windowed --onedir `
+            --exclude-module mutagen `
+            --add-binary "$env:BIN_DIR\deno.exe;bin" `
+            --add-binary "$env:BIN_DIR\ffmpeg.exe;bin" `
+            --add-binary "$env:BIN_DIR\ffprobe.exe;bin" `
+            src\klay\main.py
+
+      - name: Verify package contents
+        run: |
+          $bundled = "dist\Klay\_internal\bin"
+
+          foreach ($executable in "deno.exe", "ffmpeg.exe", "ffprobe.exe") {
+            if (-not (Test-Path "$bundled\$executable")) { throw "Missing $executable" }
+          }
+
+          $ffmpegVersion = & "$bundled\ffmpeg.exe" -version
+          $denoVersion = & "$bundled\deno.exe" --version
+
+          if ($ffmpegVersion[0] -notmatch "N-128251-g6d1bfd7609") { throw "Unexpected FFmpeg build" }
+          if ($ffmpegVersion -match "nonfree") { throw "FFmpeg build is nonfree" }
+          if ($denoVersion[0] -notmatch "deno 2\.9\.8") { throw "Unexpected Deno version" }
+
+          $ffmpegVersion[0]
+          $denoVersion[0]
+
+          if (Get-ChildItem dist\Klay -Recurse -Filter "*mutagen*") { throw "mutagen files found in package" }
+          if (Select-String -Path build\Klay\PYZ-00.toc -SimpleMatch "mutagen" -Quiet) { throw "mutagen found in package" }
+
+      - name: Create ZIP
+        run: |
+          $PSNativeCommandUseErrorActionPreference = $true
+          Copy-Item LICENSE dist\Klay\LICENSE.txt
+          $version = python -c "import tomllib; print(tomllib.load(open('pyproject.toml', 'rb'))['project']['version'])"
+          Compress-Archive -Path dist\Klay -DestinationPath "dist\Klay-v$version-windows-x86_64.zip"
+          python -m pip freeze > dist\build-requirements.txt
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: Klay-windows-x86_64
+          path: |
+            dist/Klay-*.zip
+            dist/build-requirements.txt
+          compression-level: 0
+          if-no-files-found: error

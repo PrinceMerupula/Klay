@@ -5,7 +5,7 @@ A simple GUI using yt-dlp to help non-technical users download videos and other 
 Very early development
 
 ## Current Milestone
-v0.0.23 - Pre-release bug fixes
+v0.0.24 - Licensing and Automating Windows
 
 ## Planned stack
 - Python
