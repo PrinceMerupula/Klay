@@ -33,6 +33,23 @@ def is_valid_url(url: str) -> bool:
         and bool(parsed_url.netloc)
     )
 
+def get_output_template(download_mode: str, audio_format: str) -> str:
+    """Return a file name template that keeps each kind of download separate."""
+    base = "%(title)s [%(id)s]"
+    quality = "%(height&{}p|source)s"
+
+    if download_mode == "Video Only":
+        return f"{base} {quality} video only.%(ext)s"
+
+    if download_mode == "Audio Only":
+        if audio_format in ("MP3", "M4A"):
+            return f"{base} audio-{audio_format.lower()}.%(ext)s"
+
+        return f"{base} audio.%(ext)s"
+
+    return f"{base} {quality}.%(ext)s"
+
+
 def download(
     url: str,
     progress_hook=None,
@@ -73,6 +90,8 @@ def download(
         options["paths"] = {
             "home": output_directory,
         }
+
+    options["outtmpl"] = get_output_template(download_mode, audio_format)
 
     if download_mode == "Video + Audio":
         if max_height is None:

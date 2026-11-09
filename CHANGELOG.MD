@@ -2,6 +2,21 @@
 
 ## Unreleased
 
+## v0.0.25 - Third-party notices
+
+### Added
+- Third-party notices and license texts in the Windows package (implemented using Claude Code)
+
+### Altered
+- Windows package excludes Qt Virtual Keyboard and Qt PDF, which Klay does not use
+- Each download type now uses its own file name, including the resolution or audio format
+
+### Fixed
+- Downloading the same video with different settings could return the wrong file or delete an earlier download
+
+### Notes
+- FFmpeg source files must be attached to any public release that includes the Windows package
+
 ## v0.0.24 - Licensing and Automating Windows
 
 ### Added

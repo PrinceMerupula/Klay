@@ -59,6 +59,10 @@ jobs:
             --add-binary "$env:BIN_DIR\ffprobe.exe;bin" `
             src\klay\main.py
 
+      - name: Remove unused Qt components
+        run: |
+          Get-ChildItem dist\Klay\_internal\PySide6 -Recurse -Include "*virtualkeyboard*", "*pdf*" | Remove-Item -Force
+
       - name: Verify package contents
         run: |
           $bundled = "dist\Klay\_internal\bin"
@@ -77,6 +81,8 @@ jobs:
           $ffmpegVersion[0]
           $denoVersion[0]
 
+          if (Get-ChildItem dist\Klay -Recurse -Filter "*virtualkeyboard*") { throw "Qt Virtual Keyboard files found in package" }
+          if (Get-ChildItem dist\Klay\_internal\PySide6 -Recurse -Filter "*pdf*") { throw "Qt PDF files found in package" }
           if (Get-ChildItem dist\Klay -Recurse -Filter "*mutagen*") { throw "mutagen files found in package" }
           if (Select-String -Path build\Klay\PYZ-00.toc -SimpleMatch "mutagen" -Quiet) { throw "mutagen found in package" }
 
@@ -84,6 +90,7 @@ jobs:
         run: |
           $PSNativeCommandUseErrorActionPreference = $true
           Copy-Item LICENSE dist\Klay\LICENSE.txt
+          python packaging\collect_licenses.py dist\Klay
           $version = python -c "import tomllib; print(tomllib.load(open('pyproject.toml', 'rb'))['project']['version'])"
           Compress-Archive -Path dist\Klay -DestinationPath "dist\Klay-v$version-windows-x86_64.zip"
           python -m pip freeze > dist\build-requirements.txt

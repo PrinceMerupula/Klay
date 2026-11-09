@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "klay"
-version = "0.0.24"
+version = "0.0.25"
 description = "A simple desktop GUI for yt-dlp designed to make downloading online media accessible to non-technical users."
 readme = "README.md"
 license = "MIT"

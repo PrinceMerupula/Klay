@@ -1,0 +1,80 @@
+Klay v{klay_version} - Third-Party Notices
+
+Klay itself is licensed under the MIT License (see LICENSE.txt). Its source
+code is available at https://github.com/PrinceMerupula/Klay
+
+This package also includes the third-party software listed below. Each
+component remains under its own license. License texts are in the "licenses"
+folder next to this file.
+
+
+FFMPEG AND FFPROBE
+Version: N-128251-g6d1bfd7609
+License: GNU General Public License, version 3 (licenses/GPL-3.0.txt)
+Files: _internal/bin/ffmpeg.exe, _internal/bin/ffprobe.exe
+Website: https://ffmpeg.org
+
+These are unmodified builds from https://github.com/yt-dlp/FFmpeg-Builds
+(release autobuild-2026-10-31-18-18). Klay runs them as separate programs.
+
+The complete corresponding source code, including the source of the libraries
+built into these programs and the scripts used to build them, is available at
+no charge from the same page as this package:
+https://github.com/PrinceMerupula/Klay/releases/tag/v{klay_version}
+
+
+QT AND PYSIDE6
+Version: {pyside6_version}
+License: GNU Lesser General Public License, version 3 (licenses/LGPL-3.0.txt,
+         licenses/GPL-3.0.txt)
+Files: _internal/PySide6, _internal/shiboken6
+Website: https://www.qt.io
+
+Klay uses the Qt libraries and PySide6 bindings under the LGPLv3. These are
+unmodified and are included as separate files, so you can replace them with
+your own interface-compatible versions.
+
+Source code:
+PySide6 and Shiboken6:
+https://download.qt.io/official_releases/QtForPython/pyside6/PySide6-{pyside6_version}-src/
+Qt:
+https://download.qt.io/official_releases/qt/{qt_series}/{pyside6_version}/submodules/
+
+Qt includes third-party components under their own licenses, listed at:
+https://doc.qt.io/qt-6/licenses-used-in-qt.html
+
+Qt Virtual Keyboard is not included in this package.
+
+
+DENO
+Version: 2.9.8
+License: MIT License (licenses/Deno-LICENSE.md)
+File: _internal/bin/deno.exe
+Website: https://deno.com
+
+
+PYTHON
+Version: {python_version}
+License: Python Software Foundation License and the licenses of its bundled
+         components, including OpenSSL (licenses/Python-LICENSE.txt)
+Website: https://www.python.org
+
+
+PYINSTALLER BOOTLOADER
+License: GNU General Public License, version 2 or later, with an exception that
+         allows it to be used with programs under any license
+         (licenses/python-packages/pyinstaller)
+Website: https://pyinstaller.org
+
+
+MICROSOFT RUNTIME LIBRARIES
+Files: VCRUNTIME140.dll, VCRUNTIME140_1.dll, MSVCP140*.dll, ucrtbase.dll,
+       api-ms-win-*.dll
+These libraries are copyright Microsoft Corporation and are included as
+redistributable runtime components.
+
+
+PYTHON PACKAGES
+License texts are in licenses/python-packages.
+
+{python_packages}
