@@ -13,6 +13,7 @@
 
 ### Fixed
 - Downloading the same video with different settings could return the wrong file or delete an earlier download
+- Third-party notices now include OpenSSL and its license text, which Python's Windows license file does not cover
 
 ### Notes
 - FFmpeg source files must be attached to any public release that includes the Windows package

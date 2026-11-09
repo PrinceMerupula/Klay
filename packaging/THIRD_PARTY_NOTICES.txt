@@ -56,8 +56,17 @@ Website: https://deno.com
 PYTHON
 Version: {python_version}
 License: Python Software Foundation License and the licenses of its bundled
-         components, including OpenSSL (licenses/Python-LICENSE.txt)
+         components (licenses/Python-LICENSE.txt)
 Website: https://www.python.org
+
+
+OPENSSL
+Version: {openssl_version}
+License: Apache License, version 2.0 (licenses/OpenSSL-LICENSE.txt)
+Files: _internal/libssl-3*.dll, _internal/libcrypto-3*.dll
+Website: https://www.openssl.org
+
+OpenSSL is included with Python and provides secure network connections.
 
 
 PYINSTALLER BOOTLOADER

@@ -3,6 +3,7 @@
 Usage: python packaging/collect_licenses.py dist/Klay
 """
 import shutil
+import ssl
 import sys
 import sysconfig
 from importlib.metadata import distribution, version
@@ -83,6 +84,7 @@ def main() -> None:
         "{pyside6_version}": pyside6_version,
         "{qt_series}": f"{major}.{minor}",
         "{python_version}": sys.version.split()[0],
+        "{openssl_version}": ssl.OPENSSL_VERSION.split()[1],
         "{python_packages}": python_packages,
     }.items():
         notices = notices.replace(placeholder, value)
