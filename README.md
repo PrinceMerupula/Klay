@@ -1,9 +1,9 @@
 # Klay
-A simple desktop application built on [yt-dlp] (https://github.com/yt-dlp/yt-dlp) for downloading video and audio from YouTube (and other websites).
+A simple desktop application built on [yt-dlp](https://github.com/yt-dlp/yt-dlp) for downloading video and audio from YouTube (and other websites).
 
 ## Download
 
-Get the newest version from the [Releases page] (https://github.com/PrinceMerupula/Klay/releases). 
+Get the newest version from the [Releases page](https://github.com/PrinceMerupula/Klay/releases). 
 Klay currently supports the following version(s):
 - Windows 11 (x86-64)
 
@@ -11,12 +11,12 @@ Klay currently supports the following version(s):
 
 1. Download the file from the Releases page
 2. Extract the ZIP file
-3. Run 'Klay.exe'
+3. Run `Klay.exe`
 
-Keep the '_internal' folder next to 'Klay.exe', as Klay will not start otherwise.
+Keep the `_internal` folder next to `Klay.exe`, as Klay will not start otherwise.
 
 Klay is not yet code-signed. As a result, Windows will likely show a "Windows protected your PC" warning. 
-Click **More info**, then click **Run anyway**
+Click **More info**, then click **Run anyway**.
 
 ## Known Issues
 
@@ -26,9 +26,9 @@ Click **More info**, then click **Run anyway**
 
 ## License
 
-Klay is licensed under the [MIT License] (LICENSE).
+Klay is licensed under the [MIT License](LICENSE).
 
-The Windows package also includes FFMpeg, Qt, and other software under their own licenses, listed in 'THIRD_PARTY_NOTICES.txt" inside the ZIP. The FFMpeg source code is available on the release page. 
+The Windows package also includes FFmpeg, Qt, and other software under their own licenses, listed in `THIRD_PARTY_NOTICES.txt` inside the ZIP. The FFmpeg source code is available on the release page. 
 
 ## Current Milestone
 v0.1.0 - First public release
