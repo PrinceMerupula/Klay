@@ -1,5 +1,18 @@
 # Changelog
 
+## v0.1.0 - First public release
+
+### Added
+- Windows 11 x86-64 package available on the Releases page
+- FFmpeg source code attached to the release
+
+### Altered
+- README rewritten for users 
+
+### Notes
+- Klay is not code-signed which means Windows SmartScreen will likely warn on initial launch
+- Klay does not automatically update, so changes in YouTube or yt-dlp may impact functionality
+
 ## Unreleased
 
 ## v0.0.25 - Third-party notices
